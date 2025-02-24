@@ -149,7 +149,11 @@ func exportSubDot(self: Graph): string # forward declaration
 
 func tableToAttributes(tbl: Table[string, string]): seq[string] =
   for (key, value) in tbl.pairs() :
-    result.add exportIdentifier(key) & "=" & exportIdentifier(value)
+    if key == "label" :
+      let is_likely_html = value.startsWith('<') and value.endsWith('>')
+      result.add exportIdentifier(key) & "=" & (if is_likely_html: value else: exportIdentifier(value))
+    else:
+      result.add exportIdentifier(key) & "=" & exportIdentifier(value)
 
 func exportAttributes(self: Graph): string =
   result = tableToAttributes(self.graphAttr).join(";\n")
